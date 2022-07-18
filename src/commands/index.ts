@@ -1,5 +1,5 @@
-import podziekujCommand from "./podziekuj/podziekuj";
+import thanksCommand from "./thanks/thanks";
 
-const commands = [podziekujCommand];
+const commands = [thanksCommand];
 
 export { commands };

@@ -2,7 +2,9 @@ import DiscordJS, { Intents } from "discord.js";
 import dotenv from "dotenv";
 import { commands } from "./src/commands";
 import { handleCommand } from "./src/commands/commandHandler";
-import { COMMANDS } from "./src/commands/types";
+import mongoose from "mongoose";
+import { thanksSchema } from "./src/schema/thanks";
+import { discordUserSchema } from "./src/schema/discord-user";
 
 const GUILD_ID = "814227146423402547";
 
@@ -12,8 +14,12 @@ const client = new DiscordJS.Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
 
-client.on("ready", () => {
+client.on("ready", async () => {
     console.log("The bot is ready");
+
+    await mongoose.connect(`${process.env.MONGO_DB_TOKEN}`, {
+        keepAlive: true,
+    });
     const guild = client.guilds.cache.get(GUILD_ID);
     const commandsAPI = guild ? guild.commands : client.application?.commands;
 
@@ -28,6 +34,24 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-client.on("messageCreate", (message) => {});
+client.on("messageCreate", async (message) => {
+    if (message.content === "!ranking") {
+        const users = await discordUserSchema.find({});
+        console.log(users);
+        const ranking = users
+            .filter((user) => user.thanksReceived > 0)
+            .sort((a, b) => b.thanksReceived - a.thanksReceived)
+            .map(({ id, thanksReceived }, i) => {
+                const { username } = client.users.cache.get(id) || {};
+                if (!username) {
+                    console.log(id);
+                }
+
+                return `#${i + 1} ${username} (${thanksReceived})`;
+            })
+            .join("\n");
+        message.reply(ranking);
+    }
+});
 
 client.login(process.env.DISCORD_TOKEN);

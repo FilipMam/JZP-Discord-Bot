@@ -1,11 +1,11 @@
 import { COMMANDS } from "./types";
 import { CommandInteraction } from "discord.js";
-import { handler as podziekujHandle } from "./podziekuj/podziekuj";
+import { handler as thanksHandler } from "./thanks/thanks";
 
 export const handleCommand = (interaction: CommandInteraction) => {
     switch (interaction.commandName) {
         case COMMANDS.THANKS:
-            podziekujHandle(interaction);
+            thanksHandler(interaction);
             break;
         default:
             break;
