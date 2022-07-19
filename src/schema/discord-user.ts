@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 
-export const DiscordUserSchema = new mongoose.Schema({
+interface IDiscordUser {
+    id: string;
+    thanksGiven: number;
+    thanksReceived: number;
+    lastGiven: number;
+    username: string;
+}
+
+const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     id: {
         type: String,
         required: true,
@@ -21,6 +29,6 @@ export const DiscordUserSchema = new mongoose.Schema({
     },
 });
 
-const discordUserSchema = mongoose.model("discordUser", DiscordUserSchema);
+const DiscordUser = mongoose.model("discordUser", discordUserSchema);
 
-export { discordUserSchema };
+export { DiscordUser, IDiscordUser };

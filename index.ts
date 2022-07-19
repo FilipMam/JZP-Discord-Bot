@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 import { commands } from "./src/commands";
 import { handleCommand } from "./src/commands/commandHandler";
 import mongoose from "mongoose";
-import { thanksSchema } from "./src/schema/thanks";
-import { discordUserSchema } from "./src/schema/discord-user";
+import { Thanks } from "./src/schema/thanks";
+import { DiscordUser } from "./src/schema/discord-user";
 
 const GUILD_ID = "814227146423402547";
 
@@ -36,7 +36,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.on("messageCreate", async (message) => {
     if (message.content === "!ranking") {
-        const users = await discordUserSchema.find({});
+        const users = await DiscordUser.find({});
         console.log(users);
         const ranking = users
             .filter((user) => user.thanksReceived > 0)

@@ -1,16 +1,22 @@
 import mongoose from "mongoose";
 
+interface IThanks {
+    author: string;
+    target: string;
+    createdTimestamp: number;
+}
+
 const reqString = {
     type: String,
     required: true,
 };
 
-const ThanksSchema = new mongoose.Schema({
+const thanksSchema = new mongoose.Schema<IThanks>({
     author: reqString,
     target: reqString,
     createdTimestamp: Number,
 });
 
-const thanksSchema = mongoose.model("thanks", ThanksSchema);
+const Thanks = mongoose.model("thanks", thanksSchema);
 
-export { ThanksSchema, thanksSchema };
+export { IThanks, Thanks };

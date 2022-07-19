@@ -1,7 +1,7 @@
 import DiscordJS from "discord.js";
 import { COMMANDS } from "../types";
-import { thanksSchema } from "../../schema/thanks";
-import { discordUserSchema } from "../../schema/discord-user";
+import { Thanks } from "../../schema/thanks";
+import { DiscordUser, IDiscordUser } from "../../schema/discord-user";
 
 export const run = (
     commandsAPI:
@@ -50,27 +50,27 @@ export const handler = async (interaction: CommandInteraction) => {
 
     const { thanksGiven: authorGiven } = (await findDiscordUser(
         authorId
-    )) as any;
+    )) as IDiscordUser;
 
     const { thanksReceived: targetReceived } = (await findDiscordUser(
         targetId
-    )) as any;
+    )) as IDiscordUser;
 
-    await discordUserSchema.updateOne(
+    await DiscordUser.updateOne(
         {
             id: authorId,
         },
         { thanksGiven: authorGiven + 1, lastGiven: createdTimestamp }
     );
 
-    await discordUserSchema.updateOne(
+    await DiscordUser.updateOne(
         {
             id: targetId,
         },
         { thanksReceived: targetReceived + 1 }
     );
 
-    await thanksSchema.create({
+    await Thanks.create({
         author: authorId,
         target: targetId,
         createdTimestamp,
@@ -82,12 +82,12 @@ export const handler = async (interaction: CommandInteraction) => {
 const findDiscordUser = async (discordId?: string) => {
     if (!discordId) return;
 
-    let record = await discordUserSchema.findOne({
+    let record = await DiscordUser.findOne({
         id: discordId,
     });
 
     if (!record) {
-        record = await discordUserSchema.create({
+        record = await DiscordUser.create({
             id: discordId,
         });
     }
