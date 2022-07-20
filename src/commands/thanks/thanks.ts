@@ -48,29 +48,32 @@ export const handler = async (interaction: CommandInteraction) => {
         return;
     }
 
-    const { thanksGiven: authorGiven } = (await findDiscordUser(
-        authorId
-    )) as IDiscordUser;
+    findDiscordUser(authorId).then((user) => {
+        DiscordUser.updateOne(
+            {
+                id: authorId,
+            },
+            {
+                thanksGiven: user?.thanksGiven ? user?.thanksGiven + 1 : 1,
+                lastGiven: createdTimestamp,
+            }
+        );
+    });
 
-    const { thanksReceived: targetReceived } = (await findDiscordUser(
-        targetId
-    )) as IDiscordUser;
+    findDiscordUser(targetId).then((user) => {
+        DiscordUser.updateOne(
+            {
+                id: targetId,
+            },
+            {
+                thanksReceived: user?.thanksReceived
+                    ? user?.thanksReceived + 1
+                    : 1,
+            }
+        );
+    });
 
-    await DiscordUser.updateOne(
-        {
-            id: authorId,
-        },
-        { thanksGiven: authorGiven + 1, lastGiven: createdTimestamp }
-    );
-
-    await DiscordUser.updateOne(
-        {
-            id: targetId,
-        },
-        { thanksReceived: targetReceived + 1 }
-    );
-
-    await Thanks.create({
+    Thanks.create({
         author: authorId,
         target: targetId,
         createdTimestamp,
@@ -92,7 +95,7 @@ const findDiscordUser = async (discordId?: string) => {
         });
     }
 
-    return record;
+    return record as IDiscordUser;
 };
 
 export default { run, handler };
