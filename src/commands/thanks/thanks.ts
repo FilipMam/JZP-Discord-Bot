@@ -1,4 +1,4 @@
-import DiscordJS from "discord.js";
+import DiscordJS, { Client, User } from "discord.js";
 import { COMMANDS } from "../types";
 import { Thanks } from "../../schema/thanks";
 import { DiscordUser, IDiscordUser } from "../../schema/discord-user";
@@ -33,13 +33,17 @@ export const run = (
 
 import { CommandInteraction } from "discord.js";
 
-export const handler = async (interaction: CommandInteraction) => {
+export const handler = async (
+    interaction: CommandInteraction,
+    client: Client
+) => {
     const { options, createdTimestamp } = interaction;
-    const { username: targetName, id: targetId } =
-        options.get("target")?.user || {};
-    const { username: authorName, id: authorId } = interaction.user || {};
+    const target = options.get("target")?.user;
+    const author = interaction.user;
 
-    if (targetId === authorId) {
+    if (!target || !author) return;
+
+    if (author.id === target.id) {
         interaction.reply({
             content: "Podziękuj sobie w lustrze a nie na Discordzie! xD",
             ephemeral: true,
@@ -48,50 +52,52 @@ export const handler = async (interaction: CommandInteraction) => {
         return;
     }
 
-    findDiscordUser(authorId).then((user) => {
+    findDiscordUser(author).then(async (user) => {
         DiscordUser.updateOne(
             {
-                id: authorId,
+                discordId: author.id,
             },
             {
                 thanksGiven: user?.thanksGiven ? user?.thanksGiven + 1 : 1,
                 lastGiven: createdTimestamp,
             }
-        );
+        ).then();
     });
 
-    findDiscordUser(targetId).then((user) => {
+    findDiscordUser(target).then(async (user) => {
         DiscordUser.updateOne(
             {
-                id: targetId,
+                discordId: target.id,
             },
             {
                 thanksReceived: user?.thanksReceived
                     ? user?.thanksReceived + 1
                     : 1,
             }
-        );
+        ).then();
     });
 
     Thanks.create({
-        author: authorId,
-        target: targetId,
+        author: author.id,
+        target: target.id,
         createdTimestamp,
     });
 
-    interaction.reply(`${authorName} podziękował ${targetName}!`);
+    interaction.reply(`${author.username} podziękował ${target.username}!`);
 };
 
-const findDiscordUser = async (discordId?: string) => {
-    if (!discordId) return;
+const findDiscordUser = async (user?: User) => {
+    if (!user) return;
+    const { id, username } = user;
 
     let record = await DiscordUser.findOne({
-        id: discordId,
+        discordId: id,
     });
 
     if (!record) {
         record = await DiscordUser.create({
-            id: discordId,
+            discordId: id,
+            username,
         });
     }
 

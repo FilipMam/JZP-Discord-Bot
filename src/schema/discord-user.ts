@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 interface IDiscordUser {
-    id: string;
+    discordId: string;
     thanksGiven: number;
     thanksReceived: number;
     lastGiven: number;
@@ -9,7 +9,7 @@ interface IDiscordUser {
 }
 
 const discordUserSchema = new mongoose.Schema<IDiscordUser>({
-    id: {
+    discordId: {
         type: String,
         required: true,
     },

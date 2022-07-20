@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import { commands } from "./src/commands";
 import { handleCommand } from "./src/commands/commandHandler";
 import mongoose from "mongoose";
-import { Thanks } from "./src/schema/thanks";
 import { DiscordUser } from "./src/schema/discord-user";
 
 const GUILD_ID = "814227146423402547";
@@ -30,21 +29,19 @@ client.on("ready", async () => {
 
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isCommand()) {
-        handleCommand(interaction);
+        handleCommand(interaction, client);
     }
 });
 
 client.on("messageCreate", async (message) => {
     if (message.content === "!ranking") {
         const users = await DiscordUser.find({});
-        console.log(users);
         const ranking = users
             .filter((user) => user.thanksReceived > 0)
             .sort((a, b) => b.thanksReceived - a.thanksReceived)
-            .map(({ id, thanksReceived }, i) => {
-                const { username } = client.users.cache.get(id) || {};
+            .map(({ discordId, thanksReceived, username }, i) => {
                 if (!username) {
-                    console.log(id);
+                    console.log(discordId);
                 }
 
                 return `#${i + 1} ${username} (${thanksReceived})`;
