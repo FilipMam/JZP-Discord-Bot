@@ -29,7 +29,7 @@ client.on("ready", async () => {
 
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isCommand()) {
-        handleCommand(interaction, client);
+        handleCommand(interaction);
     }
 });
 
