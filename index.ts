@@ -1,4 +1,4 @@
-import DiscordJS, { Intents } from "discord.js";
+import DiscordJS, { Intents, TextChannel } from "discord.js";
 import dotenv from "dotenv";
 import { commands } from "./src/commands";
 import { handleCommand } from "./src/commands/commandHandler";
@@ -51,4 +51,15 @@ client.on("messageCreate", async (message) => {
     }
 });
 
+client.on("rankUp", (message) => {
+    const channel = client.channels?.cache?.find(
+        (channel) => channel.id === "931969825545257041"
+    );
+    if (channel) {
+        (channel as TextChannel).send(message);
+    }
+});
+
 client.login(process.env.DISCORD_TOKEN);
+
+export { client };

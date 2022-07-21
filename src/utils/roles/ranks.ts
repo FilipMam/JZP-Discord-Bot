@@ -1,4 +1,5 @@
 import { GuildMember, GuildMemberRoleManager } from "discord.js";
+import DiscordJS, { Intents } from "discord.js";
 
 const rankTresholds: { [k: number]: string } = {
     10: "999725115954692217",
@@ -14,8 +15,6 @@ const getCurrentRole = (n: number): string => {
             .filter((key) => +key <= +n)
             .at(-1)
     );
-
-    console.log(treshhold);
 
     return rankTresholds[treshhold];
 };

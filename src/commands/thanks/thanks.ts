@@ -1,9 +1,10 @@
-import DiscordJS, { Client, User } from "discord.js";
+import DiscordJS, { Guild, User } from "discord.js";
 import { COMMANDS } from "../types";
 import { Thanks } from "../../schema/thanks";
-import { DiscordUser, IDiscordUser } from "../../schema/discord-user";
+import { DiscordUser } from "../../schema/discord-user";
 import { CommandInteraction } from "discord.js";
 import { updateRankRole } from "../../utils/roles/ranks";
+import { client } from "../../..";
 
 export const run = (
     commandsAPI:
@@ -62,12 +63,25 @@ export const handler = async (interaction: CommandInteraction) => {
         createdTimestamp,
     });
 
-    interaction.reply(`${author.username} podziękował ${target.username}!`);
-
     const newRole = updateRankRole(
         updatedTarget.thanksReceived,
         interaction.guild?.members.cache.get(updatedTarget.discordId)
     );
+
+    if (newRole) {
+        const guild = client.guilds?.cache?.find(
+            (g) => g.id === "814227146423402547"
+        ) as Guild;
+        if (!guild) return;
+
+        const role = guild.roles.cache.find((role) => role.id === newRole);
+        client.emit(
+            "rankUp",
+            `${target.username} otrzymał rangę ${role?.name}`
+        );
+    }
+
+    interaction.reply(`${author.username} podziękował ${target.username}!`);
 };
 
 const updateUserAndIncrementGiven = async (user: User, lastGiven: number) => {
@@ -96,7 +110,8 @@ const updateUserAndIncrementReceived = async (user: User) => {
         {
             discordId: user.id,
         },
-        { $inc: { thanksReceived: 15 } }
+        { $inc: { thanksReceived: 15 } },
+        { new: true }
     );
 
     if (!exitistingUser) {
