@@ -1,8 +1,6 @@
-import DiscordJS, { Client, Intents, TextChannel } from "discord.js";
+import DiscordJS, { Client, Intents } from "discord.js";
 import { registerCommands } from "../commands";
-import { handleCommand } from "../commands/commandHandler";
 import mongoose from "mongoose";
-import { DiscordUser } from "../schema/discord-user";
 import { registerGlobalEvents } from "./eventBus";
 
 let client: Client;
@@ -20,33 +18,8 @@ const initClient = () => {
         });
 
         registerCommands();
+        registerGlobalEvents();
     });
-
-    client.on("interactionCreate", async (interaction) => {
-        if (interaction.isCommand()) {
-            handleCommand(interaction);
-        }
-    });
-
-    client.on("messageCreate", async (message) => {
-        if (message.content === "!ranking") {
-            const users = await DiscordUser.find({});
-            const ranking = users
-                .filter((user) => user.thanksReceived > 0)
-                .sort((a, b) => b.thanksReceived - a.thanksReceived)
-                .map(({ discordId, thanksReceived, username }, i) => {
-                    if (!username) {
-                        console.log(discordId);
-                    }
-
-                    return `#${i + 1} ${username} (${thanksReceived})`;
-                })
-                .join("\n");
-            message.reply(ranking);
-        }
-    });
-
-    registerGlobalEvents();
 
     client.login(process.env.DISCORD_TOKEN);
 };
