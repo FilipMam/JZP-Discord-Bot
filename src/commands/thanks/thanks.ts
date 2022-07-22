@@ -4,7 +4,7 @@ import { Thanks } from "../../schema/thanks";
 import { DiscordUser } from "../../schema/discord-user";
 import { CommandInteraction } from "discord.js";
 import { updateRankRole } from "../../utils/roles/ranks";
-import { client } from "../../..";
+import { client } from "../../client/client";
 
 export const run = (
     commandsAPI:

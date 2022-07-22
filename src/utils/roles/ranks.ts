@@ -16,6 +16,8 @@ const getCurrentRole = (n: number): string => {
             .at(-1)
     );
 
+    console.log(treshhold);
+
     return rankTresholds[treshhold];
 };
 
