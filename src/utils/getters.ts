@@ -1,5 +1,6 @@
 import { client } from "../client/client";
 import { DiscordUser } from "../schema/discord-user";
+import { Thanks } from "../schema/thanks";
 import { GUILD_ID } from "./contstants/ids";
 
 const getGuild = () => client.guilds.cache.get(GUILD_ID);
@@ -22,4 +23,10 @@ const getMainRanking = async () => {
         .join("\n");
 };
 
-export { getGuild, getChannel, getMainRanking };
+const getUser = async (userId: string) => {
+    return client.users.cache.find(({ id }) => id === userId);
+};
+
+const getUsername = (userId: string) => "";
+
+export { getGuild, getChannel, getMainRanking, getUser, getUsername };
