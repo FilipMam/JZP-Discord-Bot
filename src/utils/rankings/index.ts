@@ -1,18 +1,33 @@
-import { client } from "../../client/client";
+import moment from "moment";
 import { DiscordUser } from "../../schema/discord-user";
 import { IThanks, Thanks } from "../../schema/thanks";
-import { getUsername } from "../getters";
 
-const getRankingOfTheMonth = async () => {};
+const dayInMs = 1000 * 60 * 60 * 24;
 
-const getThanksFromLastWeek = async () => {
-    const now = new Date();
-    const weekAgo = now.getTime() - 1000 * 60 * 60 * 24 * 7;
+const getThanksByDate = async (start: number) => {
     const thanks = await Thanks.find({
-        createdTimestamp: { $gte: weekAgo },
+        createdTimestamp: { $gte: start },
     });
     return thanks;
 };
+
+const getThanksFromLastWeek = async () => {
+    const now = new Date();
+    const weekAgo = now.getTime() - dayInMs * 7;
+    const thanks = await getThanksByDate(weekAgo);
+    return thanks;
+};
+
+const getThanksFromStartOfThisWeek = async () => {
+    const startOfTheWeek = moment().startOf("week").valueOf();
+    return await getThanksByDate(startOfTheWeek);
+};
+
+const getThanksFromStartOfThisMonth = async () => {
+    const startOfTheMonth = moment().startOf("month").valueOf();
+    return await getThanksByDate(startOfTheMonth);
+};
+
 type ranking = { [k: string]: number };
 
 const getRanking = async (thanks: IThanks[]) => {
@@ -58,8 +73,13 @@ const getRanking = async (thanks: IThanks[]) => {
 
 // get rankings by date
 const getRankingOfTheWeek = async () => {
-    const messagesFromLastWeek = await getThanksFromLastWeek();
+    const messagesFromLastWeek = await getThanksFromStartOfThisWeek();
     return getRanking(messagesFromLastWeek);
+};
+
+const getRankingOfTheMonth = async () => {
+    const messagesFromLastMonth = await getThanksFromStartOfThisMonth();
+    return getRanking(messagesFromLastMonth);
 };
 
 export { getRankingOfTheWeek, getRankingOfTheMonth };

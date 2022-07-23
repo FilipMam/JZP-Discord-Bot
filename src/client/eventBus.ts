@@ -1,7 +1,7 @@
 import { sendMessageToChannel } from "../utils/actions";
 import { CHANNELS } from "../utils/contstants/ids";
 import { getMainRanking } from "../utils/getters";
-import { getRankingOfTheWeek } from "../utils/rankings";
+import { getRankingOfTheMonth, getRankingOfTheWeek } from "../utils/rankings";
 import { client } from "./client";
 
 const registerGlobalEvents = () => {
@@ -17,6 +17,11 @@ const registerGlobalEvents = () => {
 
         if (message.content === "!rankingTygodnia") {
             const ranking = await getRankingOfTheWeek();
+            message.reply(ranking);
+        }
+
+        if (message.content === "!rankingMiesiaca") {
+            const ranking = await getRankingOfTheMonth();
             message.reply(ranking);
         }
     });
