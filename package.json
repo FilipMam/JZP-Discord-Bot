@@ -14,6 +14,12 @@
         "dotenv": "^16.0.1",
         "moment": "^2.29.4",
         "mongoose": "^6.4.5",
-        "nodemon": "^2.0.19"
+        "node-cron": "^3.0.1",
+        "nodemon": "^2.0.19",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "@types/node-cron": "^3.0.2",
+        "@types/uuid": "^8.3.4"
     }
 }

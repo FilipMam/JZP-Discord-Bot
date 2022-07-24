@@ -1,6 +1,5 @@
 import { client } from "../client/client";
 import { DiscordUser } from "../schema/discord-user";
-import { Thanks } from "../schema/thanks";
 import { GUILD_ID } from "./contstants/ids";
 
 const getGuild = () => client.guilds.cache.get(GUILD_ID);

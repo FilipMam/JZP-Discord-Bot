@@ -2,6 +2,7 @@ import DiscordJS, { Client, Intents } from "discord.js";
 import { registerCommands } from "../commands";
 import mongoose from "mongoose";
 import { registerGlobalEvents } from "./eventBus";
+import { initCrons } from "../../crons";
 
 let client: Client;
 
@@ -19,6 +20,7 @@ const initClient = () => {
 
         registerCommands();
         registerGlobalEvents();
+        initCrons();
     });
 
     client.login(process.env.DISCORD_TOKEN);
