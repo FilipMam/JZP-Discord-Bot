@@ -2,30 +2,30 @@ import moment from "moment";
 import { DiscordUser } from "../../schema/discord-user";
 import { IThanks, Thanks } from "../../schema/thanks";
 
-const dayInMs = 1000 * 60 * 60 * 24;
+const hourInMs = 1000 * 60 * 60;
 
-const getThanksByDate = async (start: number) => {
+const getThanksFromStartDate = async (start: number) => {
     const thanks = await Thanks.find({
         createdTimestamp: { $gte: start },
     });
     return thanks;
 };
 
-const getThanksFromLastWeek = async () => {
-    const now = new Date();
-    const weekAgo = now.getTime() - dayInMs * 7;
-    const thanks = await getThanksByDate(weekAgo);
+const getThanksFromPeroid = async (start: number, end: number) => {
+    const thanks = await Thanks.find({
+        createdTimestamp: { $gte: start, $lte: end },
+    });
     return thanks;
 };
 
 const getThanksFromStartOfThisWeek = async () => {
-    const startOfTheWeek = moment().startOf("week").valueOf();
-    return await getThanksByDate(startOfTheWeek);
+    const startOfTheWeek = moment().startOf("week").valueOf() - hourInMs * 3;
+    return await getThanksFromStartDate(startOfTheWeek);
 };
 
 const getThanksFromStartOfThisMonth = async () => {
-    const startOfTheMonth = moment().startOf("month").valueOf();
-    return await getThanksByDate(startOfTheMonth);
+    const startOfTheMonth = moment().startOf("month").valueOf() - hourInMs * 3;
+    return await getThanksFromStartDate(startOfTheMonth);
 };
 
 type ranking = { [k: string]: number };
